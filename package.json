@@ -1,0 +1,11 @@
+{
+  "name": "gh-pages-index-compiler",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "repository": "git@github.com:Badrpas/gh-pages-index-compiler.git",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.6.0",
+    "@actions/github": "^5.0.0"
+  }
+}
