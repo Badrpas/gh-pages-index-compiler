@@ -17535,7 +17535,7 @@ module.exports = async indexPath => {
 const createGitInterface = __nccwpck_require__(1477);
 const github = __nccwpck_require__(5438);
 const core = __nccwpck_require__(2186);
-const fs = __nccwpck_require__(3292);
+const fs = (__nccwpck_require__(7147).promises);
 
 
 const githubToken = core.getInput('token');
@@ -17644,14 +17644,6 @@ module.exports = require("events");
 
 "use strict";
 module.exports = require("fs");
-
-/***/ }),
-
-/***/ 3292:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("fs/promises");
 
 /***/ }),
 
