@@ -5,11 +5,10 @@ runs:
   main: 'dist/index.js'
 
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
+  out:  # id of input
+    description: 'JSON output file path'
     required: true
-    default: 'World'
-
-outputs:
-  time: # id of output
-    description: 'The time we greeted you'
+    default: 'links.json'
+  token:
+    description: GitHub Token
+    required: true

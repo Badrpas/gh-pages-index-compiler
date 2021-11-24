@@ -1,18 +1,27 @@
 const core = require('@actions/core');
-const github = require('@actions/github');
+const glob = require('util').promisify(require('glob'));
+const collectEntryInfo = require('./collect-entry-info');
 
-try {
-  // `who-to-greet` input defined in action metadata file
-  const nameToGreet = core.getInput('who-to-greet');
-  console.log(`Hello ${nameToGreet}!`);
+async function main () {
+  try {
+    const outFileName = core.getInput('out');
+    const entries = [];
 
-  const time = (new Date()).toTimeString();
-  core.setOutput("time", time);
- 
-  // Get the JSON webhook payload for the event that triggered the workflow
-  const payload = JSON.stringify(github.context.payload, null, 2);
-  console.log(`The event payload: ${payload}`);
-} catch (error) {
-  core.setFailed(error.message);
+    const indexHtmlFiles = await glob('**/index.html');
+
+    for (let filePath of indexHtmlFiles) {
+      const entry = await collectEntryInfo(filePath);
+      entries.push(entry);
+    }
+
+    const encoded = JSON.stringify(entries, null, 2);
+    console.log(encoded);
+    await fs.writeFile(outFileName, encoded, 'utf-8');
+  } catch (error) {
+    console.error(error);
+    core.setFailed(error.message);
+  }
+
 }
 
+main();
