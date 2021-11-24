@@ -17536,7 +17536,7 @@ const createGitInterface = __nccwpck_require__(1477);
 const github = __nccwpck_require__(5438);
 const core = __nccwpck_require__(2186);
 const fs = (__nccwpck_require__(7147).promises);
-
+const path = __nccwpck_require__(1017);
 
 const githubToken = core.getInput('token');
 const octokit = githubToken ? github.getOctokit(githubToken) : null;
