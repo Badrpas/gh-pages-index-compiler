@@ -2,7 +2,7 @@ const createGitInterface = require('simple-git');
 const github = require('@actions/github');
 const core = require('@actions/core');
 const fs = require('fs').promises;
-
+const path = require('path');
 
 const githubToken = core.getInput('token');
 const octokit = githubToken ? github.getOctokit(githubToken) : null;
