@@ -8,7 +8,7 @@ async function main () {
     const outFileName = core.getInput('out');
     const entries = [];
 
-    const indexHtmlFiles = await glob('**/index.html');
+    const indexHtmlFiles = await glob('*/index.html');
 
     for (let filePath of indexHtmlFiles) {
       const entry = await collectEntryInfo(filePath);

@@ -25,8 +25,8 @@ async function getDescriptionFromGithub (filePath) {
     return;
   }
 
-  console.log('filePath:', filePath);
-  
+  console.log('Trying to get GitHub description for', filePath);
+
   const log = await git.log({
     maxCount: 1,
     format: {
@@ -35,23 +35,18 @@ async function getDescriptionFromGithub (filePath) {
     file: filePath,
   });
 
-  console.log(log);
-
   const { latest: { msg } } = log;
-
-  console.log('msg:', msg);
 
   const match = /deploy: ([\w\d-_]+)\/([\w\d-_]+)@[\d\w]+/.exec(msg);
   if (match) {
     const [, owner, repo] = match;
     console.log('owner, repo:', owner, repo);
-    const repoInfo = await octokit.request('GET /repos/{owner}/{repo}', {
+    const resp = await octokit.request('GET /repos/{owner}/{repo}', {
       owner,
       repo,
     });
 
-    console.log('repoInfo:', repoInfo);
-    return repoInfo.description;
+    return resp.data.description;
   }
 }
 
