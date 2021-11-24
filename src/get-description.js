@@ -1,7 +1,7 @@
 const createGitInterface = require('simple-git');
 const github = require('@actions/github');
 const core = require('@actions/core');
-const fs = require('fs/promises');
+const fs = require('fs').promises;
 
 
 const githubToken = core.getInput('token');
