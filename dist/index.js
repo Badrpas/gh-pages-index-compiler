@@ -17800,6 +17800,7 @@ var __webpack_exports__ = {};
 (() => {
 const core = __nccwpck_require__(2186);
 const glob = (__nccwpck_require__(3837).promisify)(__nccwpck_require__(1957));
+const fs = (__nccwpck_require__(7147).promises);
 const collectEntryInfo = __nccwpck_require__(5567);
 
 async function main () {

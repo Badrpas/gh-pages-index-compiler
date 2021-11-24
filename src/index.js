@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 const glob = require('util').promisify(require('glob'));
+const fs = require('fs').promises;
 const collectEntryInfo = require('./collect-entry-info');
 
 async function main () {
