@@ -5,7 +5,11 @@
   "repository": "git@github.com:Badrpas/gh-pages-index-compiler.git",
   "license": "MIT",
   "scripts": {
-    "build": "ncc build . --license licenses.txt"
+    "build": "ncc build . --license licenses.txt",
+    "release:commit": "yarn build && git commit -am build",
+    "release:major": "yarn release:commit && npm version major",
+    "release:minor": "yarn release:commit && npm version minor",
+    "release:patch": "yarn release:commit && npm version patch"
   },
   "dependencies": {
     "@actions/core": "^1.6.0",
