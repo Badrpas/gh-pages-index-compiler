@@ -17559,13 +17559,19 @@ async function getDescriptionFromGithub (filePath) {
     return;
   }
 
-  const { latest: { msg } } = await git.log({
+  console.log('filePath:', filePath);
+  
+  const log = await git.log({
     maxCount: 1,
     format: {
       msg: '%s'
     },
     file: filePath,
   });
+
+  console.log(log);
+
+  const { latest: { msg } } = log;
 
   console.log('msg:', msg);
 
