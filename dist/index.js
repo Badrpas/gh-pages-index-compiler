@@ -17512,18 +17512,20 @@ function wrappy (fn, cb) {
 
 const path = __nccwpck_require__(1017);
 const getDescription = __nccwpck_require__(9000);
+const getRepoInfoFromGithub = __nccwpck_require__(9802);
 
 
 module.exports = async indexPath => {
-  const entry = {
+  const fileName = path.basename(indexPath);
+  const dir = path.dirname(indexPath);
+
+  return {
     indexPath,
-    fileName: path.basename(indexPath),
-    dir: path.dirname(indexPath),
+    fileName,
+    dir,
+    description: await getDescription(dir),
+    repo: await getRepoInfoFromGithub(indexPath),
   };
-
-  entry.description = (await getDescription(entry)) || '';
-
-  return entry;
 };
 
 
@@ -17532,16 +17534,8 @@ module.exports = async indexPath => {
 /***/ 9000:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const createGitInterface = __nccwpck_require__(1477);
-const github = __nccwpck_require__(5438);
-const core = __nccwpck_require__(2186);
 const fs = (__nccwpck_require__(7147).promises);
 const path = __nccwpck_require__(1017);
-
-const githubToken = core.getInput('token');
-const octokit = githubToken ? github.getOctokit(githubToken) : null;
-
-const git = createGitInterface();
 
 async function getDescriptionFromFile (filePath) {
   try {
@@ -17553,10 +17547,41 @@ async function getDescriptionFromFile (filePath) {
   }
 }
 
-async function getDescriptionFromGithub (filePath) {
+
+async function getDescription (dir) {
+  const descriptionPath = path.join(dir, 'description.txt');
+  const descriptionFromFile = await getDescriptionFromFile(descriptionPath);
+  if (descriptionFromFile !== null) {
+    return descriptionFromFile;
+  }
+
+  return '';
+}
+
+
+module.exports = getDescription;
+
+
+/***/ }),
+
+/***/ 9802:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const createGitInterface = __nccwpck_require__(1477);
+const github = __nccwpck_require__(5438);
+const core = __nccwpck_require__(2186);
+const pick = __nccwpck_require__(8327);
+
+
+const githubToken = core.getInput('token');
+const octokit = githubToken ? github.getOctokit(githubToken) : null;
+const git = createGitInterface();
+
+
+async function getRepoInfoFromGithub (filePath) {
   if (!octokit) {
     console.log(`No GitHub token provided`);
-    return;
+    return null;
   }
 
   console.log('Trying to get GitHub description for', filePath);
@@ -17572,30 +17597,36 @@ async function getDescriptionFromGithub (filePath) {
   const { latest: { msg } } = log;
 
   const match = /deploy: ([\w\d-_]+)\/([\w\d-_]+)@[\d\w]+/.exec(msg);
-  if (match) {
-    const [, owner, repo] = match;
-    console.log('owner, repo:', owner, repo);
-    const resp = await octokit.request('GET /repos/{owner}/{repo}', {
-      owner,
-      repo,
-    });
-
-    return resp.data.description;
-  }
-}
-
-async function getDescription (entry) {
-  const descriptionPath = path.join(entry.dir, 'description.txt');
-  const descriptionFromFile = await getDescriptionFromFile(descriptionPath);
-  if (descriptionFromFile !== null) {
-    return descriptionFromFile;
+  if (!match) {
+    console.log(`Couldn't find a deploy commit message`);
+    return null;
   }
 
-  return getDescriptionFromGithub(entry.indexPath);
+  const [, owner, repo] = match;
+  console.log('owner, repo:', owner, repo);
+  const resp = await octokit.request('GET /repos/{owner}/{repo}', {
+    owner,
+    repo,
+  });
+
+  return pick(resp.data, 'description', 'name', 'full_name', 'url');
 }
 
+module.exports = getRepoInfoFromGithub;
 
-module.exports = getDescription;
+
+/***/ }),
+
+/***/ 8327:
+/***/ ((module) => {
+
+
+function pick (obj, ...keys) {
+  const entries = Object.entries(obj).filter(([key]) => keys.includes(key));
+  return Object.fromEntries(entries);
+}
+
+module.exports = pick;
 
 
 /***/ }),
