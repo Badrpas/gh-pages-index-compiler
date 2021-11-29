@@ -1,15 +1,17 @@
 const path = require('path');
 const getDescription = require('./get-description');
+const getRepoInfoFromGithub = require('./gh-repo-info');
 
 
 module.exports = async indexPath => {
-  const entry = {
+  const fileName = path.basename(indexPath);
+  const dir = path.dirname(indexPath);
+
+  return {
     indexPath,
-    fileName: path.basename(indexPath),
-    dir: path.dirname(indexPath),
+    fileName,
+    dir,
+    description: await getDescription(dir),
+    repo: await getRepoInfoFromGithub(indexPath),
   };
-
-  entry.description = (await getDescription(entry)) || '';
-
-  return entry;
 };
