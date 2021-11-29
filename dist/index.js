@@ -17513,6 +17513,7 @@ function wrappy (fn, cb) {
 const path = __nccwpck_require__(1017);
 const getDescription = __nccwpck_require__(9000);
 const getRepoInfoFromGithub = __nccwpck_require__(9802);
+const getLastCommitDate = __nccwpck_require__(5641);
 
 
 module.exports = async indexPath => {
@@ -17525,6 +17526,7 @@ module.exports = async indexPath => {
     dir,
     description: await getDescription(dir),
     repo: await getRepoInfoFromGithub(indexPath),
+    changedAt: await getLastCommitDate(indexPath),
   };
 };
 
@@ -17564,6 +17566,33 @@ module.exports = getDescription;
 
 /***/ }),
 
+/***/ 5641:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const createGitInterface = __nccwpck_require__(1477);
+
+const git = createGitInterface();
+
+
+async function getLastCommitDate (filePath) {
+  const log = await git.log({
+    maxCount: 1,
+    format: {
+      dateStr: '%cd',
+    },
+    file: filePath,
+  });
+
+  const { latest: { dateStr } } = log;
+
+  return new Date(dateStr).toISOString();
+}
+
+module.exports = getLastCommitDate;
+
+
+/***/ }),
+
 /***/ 9802:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -17588,11 +17617,14 @@ async function getRepoInfoFromGithub (filePath) {
 
   const log = await git.log({
     maxCount: 1,
-    format: { msg: '%s' },
+    format: {
+      msg: '%s',
+      dateStr: '%cd',
+    },
     file: filePath,
   });
 
-  const { latest: { msg } } = log;
+  const { latest: { msg, dateStr } } = log;
 
   const match = /deploy: ([\w\d-_]+)\/([\w\d-_]+)@[\d\w]+/.exec(msg);
   if (!match) {

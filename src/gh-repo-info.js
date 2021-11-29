@@ -19,11 +19,14 @@ async function getRepoInfoFromGithub (filePath) {
 
   const log = await git.log({
     maxCount: 1,
-    format: { msg: '%s' },
+    format: {
+      msg: '%s',
+      dateStr: '%cd',
+    },
     file: filePath,
   });
 
-  const { latest: { msg } } = log;
+  const { latest: { msg, dateStr } } = log;
 
   const match = /deploy: ([\w\d-_]+)\/([\w\d-_]+)@[\d\w]+/.exec(msg);
   if (!match) {
