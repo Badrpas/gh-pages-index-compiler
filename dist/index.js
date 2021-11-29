@@ -17609,7 +17609,7 @@ async function getRepoInfoFromGithub (filePath) {
       repo,
     });
 
-    return pick(resp.data, 'description', 'name', 'full_name', 'url');
+    return pick(resp.data, 'description', 'name', 'full_name', 'html_url');
   } catch (err) {
     console.error(err);
     return null;
