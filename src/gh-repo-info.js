@@ -19,9 +19,7 @@ async function getRepoInfoFromGithub (filePath) {
 
   const log = await git.log({
     maxCount: 1,
-    format: {
-      msg: '%s'
-    },
+    format: { msg: '%s' },
     file: filePath,
   });
 
@@ -35,12 +33,18 @@ async function getRepoInfoFromGithub (filePath) {
 
   const [, owner, repo] = match;
   console.log('owner, repo:', owner, repo);
-  const resp = await octokit.request('GET /repos/{owner}/{repo}', {
-    owner,
-    repo,
-  });
 
-  return pick(resp.data, 'description', 'name', 'full_name', 'url');
+  try {
+    const resp = await octokit.request('GET /repos/{owner}/{repo}', {
+      owner,
+      repo,
+    });
+
+    return pick(resp.data, 'description', 'name', 'full_name', 'url');
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
 }
 
 module.exports = getRepoInfoFromGithub;
